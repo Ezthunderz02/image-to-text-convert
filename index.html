@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Text Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #fafafa;
+            white-space: pre-wrap;
+            text-align: left;
+        }
+
+        button {
+            padding: 10px 20px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Image to Text Converter</h1>
+    </header>
+    <div class="container">
+        <p>Select an image file to extract text from it:</p>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="convertImageToText()">Convert</button>
+        <div id="result"></div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Image to Text Converter. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+    <script>
+        function convertImageToText() {
+            const input = document.getElementById('imageInput');
+            const resultDiv = document.getElementById('result');
+
+            if (input.files.length === 0) {
+                resultDiv.textContent = 'Please select an image file first.';
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                Tesseract.recognize(
+                    event.target.result, // Image source
+                    'eng', // Language
+                    {
+                        logger: info => console.log(info) // Optional logging
+                    }
+                ).then(({ data: { text } }) => {
+                    resultDiv.textContent = text || 'No text detected in the image.';
+                }).catch(err => {
+                    console.error(err);
+                    resultDiv.textContent = 'An error occurred while processing the image.';
+                });
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
